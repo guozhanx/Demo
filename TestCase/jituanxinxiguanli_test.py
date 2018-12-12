@@ -9,12 +9,17 @@ from selenium.common.exceptions import NoAlertPresentException
 sys.path.append('../Public/')
 sys.path.append('../webApi/')
 sys.path.append('../common/')
+sys.path.append('../Data/')
+from test_data import test_data
 import time,re
 from public import ParametrizedTestCase
 from logger import Log
 from jituanxinxiguanli_element import open_element,new_group,chaxun_new_group
+data=test_data()
+
 class GroupInfo(ParametrizedTestCase):
     """集团信息管理"""
+    global data
 
     def test_a_openpage(self):
         """打开集团信息管理页面"""
@@ -40,18 +45,19 @@ class GroupInfo(ParametrizedTestCase):
             #点击新建集团按钮
             driver.find_element(*new_group()[0]).click()
             #输入集团名称
-            driver.find_element(*new_group()[1]).send_keys("AutoTesting_01")
+            driver.find_element(*new_group()[1]).send_keys(data)
             #输入联系人手机号
             driver.find_element(*new_group()[2]).send_keys("18512302010")
             #输入联系人邮箱
             driver.find_element(*new_group()[3]).send_keys("123@qq.com")
             #输入集团描述
-            driver.find_element(*new_group()[4]).send_keys("AutoTestCase_01")
+            driver.find_element(*new_group()[4]).send_keys(data)
             #确认添加
             driver.find_element(*new_group()[5]).click()
             driver.get_screenshot_as_file('../images/添加结果.png')
+            Log().info("新建集团，名字为%s"%data)
             time.sleep(10)
-            #Login().cutimages(driver)
+
         except NoSuchElementException as e:
             raise(e)
         finally:
@@ -63,15 +69,15 @@ class GroupInfo(ParametrizedTestCase):
             driver=self.param
             driver.switch_to_frame("iframeId")
             #输入集团名称
-            driver.find_element(*chaxun_new_group()[0]).send_keys("AutoTesting_01")
+            driver.find_element(*chaxun_new_group()[0]).send_keys(data)
             #点击查询
             driver.find_element(*chaxun_new_group()[1]).click()
             groupname=driver.find_element(*chaxun_new_group()[2]).text
-            self.assertEqual(u'AutoTesting_01',groupname)
+            self.assertEqual(data,groupname)
             phone=driver.find_element(*chaxun_new_group()[3]).text
             self.assertEqual('18512302010',phone)
             time.sleep(10)
-            #Login().cutimages(driver)
+            Log().info("查询到新建的集团为：%s"%groupname)
         except AssertionError as e:
             raise(e)
         finally:
